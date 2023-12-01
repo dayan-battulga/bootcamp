@@ -8,8 +8,10 @@ class CardEditor extends React.Component {
     }
 
     addCard = () => {
-        this.props.addCard(this.state);
-        this.setState({front: '', back: ''});
+        if ((this.state.front.length != 0) && (this.state.back.length != 0)) {
+            this.props.addCard(this.state);
+            this.setState({front: '', back: ''});
+        }
     }
 
     deleteCard = index => {
@@ -37,7 +39,7 @@ class CardEditor extends React.Component {
         })
 
         return (
-            <div>
+            <div className="cardEditor">
                 <h1> Card editor </h1>
                 <table>
                     <thead>

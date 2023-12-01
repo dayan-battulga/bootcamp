@@ -1,0 +1,19 @@
+.card-container {
+    display: flex;
+    height: 300px;
+    width: 100vw;
+    justify-content: center;
+}
+
+.card {
+    display: flex;
+    border: 1px solid black;
+    height: 100%;
+    width: 200px;
+    justify-content: center;
+    align-items: center;
+}
+
+.navControl {
+    margin: 20px;
+}
