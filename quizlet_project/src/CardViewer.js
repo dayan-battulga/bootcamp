@@ -1,6 +1,8 @@
 import React from "react";
 import './CardViewer.css';  
 import Card from "./Card";
+import { Link } from "react-router-dom";
+
 
 class CardViewer extends React.Component {
 
@@ -52,7 +54,6 @@ class CardViewer extends React.Component {
                     prevCard={this.prevCard}
                     cards={this.state.cards}
                     cardIndex={this.state.cardIndex}
-                    
                 />
                 <div className="progress-bar">
                     Card: {this.state.cardIndex + 1}/{this.state.cards.length}
@@ -61,7 +62,9 @@ class CardViewer extends React.Component {
                     <button onClick={this.prevCard}>Prev Card</button>
                     <button onClick={this.nextCard}>Next Card</button>
                 </div>
-                <button onClick={this.props.switchMode}>Go to Card Editor</button>
+                <Link to="/editor">
+                    <button>Go to Card Editor</button>
+                </Link>
             </div>
             
         )
