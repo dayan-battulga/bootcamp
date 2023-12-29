@@ -1,75 +1,112 @@
 import React from "react";
 import './CardViewer.css';  
-import Card from "./Card";
-import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import { compose } from "redux";
+import { firebaseConnect, isEmpty, isLoaded } from "react-redux-firebase";
 
+import { Link } from 'react-router-dom';
+import withRouter from './withRouter.js'
 
 class CardViewer extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            isCardFlipped: false,
-            cards: this.props.cards,
+            displayFront: true,
             cardIndex: 0,
         }
     }
 
     flipCard = () => {
-        this.setState({isCardFlipped: !this.state.isCardFlipped});
+        this.setState({displayFront: !this.state.displayFront});
     };
 
     nextCard = () => {
-        const { cardIndex, cards } = this.state;
-    
-        // Check if cardIndex is not already at the last index
-        if (cardIndex < cards.length - 1) {
-            this.setState({isCardFlipped: false});
-          this.setState((prevState) => ({
-            cardIndex: prevState.cardIndex + 1,
-        }));
+        if (this.state.cardIndex < this.props.cards.length - 1) {
+          this.setState({
+            cardIndex: this.state.cardIndex + 1,
+            displayFront: true,
+        });
       }
     };
 
     prevCard = () => {
-        const { cardIndex, cards } = this.state;
-    
         // Check if cardIndex is not already at the last index
-        if (cardIndex > 0) {
-            this.setState({isCardFlipped: false});
-          this.setState((prevState) => ({
-            cardIndex: prevState.cardIndex - 1,
-        }));
+        if (this.state.cardIndex > 0) {
+          this.setState({
+            cardIndex: this.state.cardIndex - 1,
+            displayFront: true,
+        });
       }
     }
 
     render() {
+        if (!isLoaded(this.props.cards)) {
+            return <div>Loading...</div>
+        }
+
+        if (isEmpty(this.props.cards)) {
+            return <div>Page does not exist!</div>
+        }
+
+        const card = this.props.cards[this.state.cardIndex][
+            this.state.displayFront ? 'front' : 'back'
+        ];
+
         return (
             <div className="cardViewer">
-                <h1>Card Viewer</h1>
-                <Card 
-                    isCardFlipped={this.state.isCardFlipped} 
-                    flipCard={this.flipCard}
-                    nextCard={this.nextCard}
-                    prevCard={this.prevCard}
-                    cards={this.state.cards}
-                    cardIndex={this.state.cardIndex}
-                />
-                <div className="progress-bar">
-                    Card: {this.state.cardIndex + 1}/{this.state.cards.length}
+                <h1>{this.props.name}</h1>
+                <div className="cardIndex">
+                    Card {this.state.cardIndex + 1} out of {this.props.cards.length}.
                 </div>
-                <div className="navControl">
-                    <button onClick={this.prevCard}>Prev Card</button>
-                    <button onClick={this.nextCard}>Next Card</button>
+                <div className="card" onClick={this.flipCard}>
+                    <div>
+                        {card}
+                    </div>
                 </div>
-                <Link to="/editor">
-                    <button>Go to Card Editor</button>
-                </Link>
+                <br />
+                <div>
+                    <button
+                      disabled={this.state.currentIndex === 0}
+                      onClick={this.prevCard}
+                    >
+                      Prev card
+                    </button>
+                    <button
+                      disabled={this.state.currentIndex === this.props.cards.length - 1}
+                      onClick={this.nextCard}
+                    >
+                      Next card
+                    </button>
+                </div>
+                <hr />
+                <div className="links">
+                    <Link to="/editor">
+                        <button>Go to card editor</button>
+                    </Link>
+                    <Link to="/">
+                        <button>Home</button>
+                    </Link>
+                </div>
+                
             </div>
             
         )
     }
 }
 
+const mapStateToProps = (state, props) => {
+    const deck = state.firebase.data[props.params.deckId];
+    const name = deck && deck.name;
+    const cards = deck && deck.cards;
+    return{cards: cards, name: name};
+}
 
-export default CardViewer;
+export default compose(
+    withRouter,
+    firebaseConnect(props => {
+        const deckId = props.params.deckId;
+        return [{path: `/flashcards/${deckId}`, storeAs: deckId}];
+    }),
+    connect(mapStateToProps),
+)(CardViewer);

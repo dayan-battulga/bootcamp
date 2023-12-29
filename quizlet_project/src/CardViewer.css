@@ -9,3 +9,21 @@
 .progress-bar {
     margin-top: 20px;
 }
+
+.card {
+    display:flex;
+    outline: 1px solid black;
+    width: 30%;
+    height: 40%;
+    justify-content: center;
+    align-items: center;
+}
+
+.links {
+    display: flex;
+    width: 50%;
+    justify-content: space-evenly;
+}
+.cardIndex {
+    margin-bottom: 25px;
+}

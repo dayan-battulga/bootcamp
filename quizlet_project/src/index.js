@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 
+
 import { Provider } from 'react-redux'
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/database';
 import { combineReducers } from 'redux'
 import { legacy_createStore as createStore } from 'redux';
 import {
